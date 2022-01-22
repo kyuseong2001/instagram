@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';   //c 기본위젯을 쓰고싶으면 옆에 import 필요
 
 var theme = ThemeData(
   //c ThemeData 쓰면 깔끔해보인다는 장점이 있다.
@@ -8,10 +8,8 @@ var theme = ThemeData(
   selectedItemColor: Colors.black,
   ),
 
-
-
-
   iconTheme: IconThemeData(color: Colors.black),
+
 
   appBarTheme: AppBarTheme(
     color: Colors.white,
