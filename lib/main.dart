@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import './style.dart' as style;
 
@@ -8,8 +10,6 @@ import 'package:flutter/rendering.dart';
 void main(){
   runApp(MaterialApp(
     theme: style.theme,
-
-
 
 
       home : MyApp()));
@@ -28,19 +28,36 @@ var tab = 0;
 
 // 첫째화면을 누르면 0, 둘째화면을 누르면 1로 표시
 
+var data = [];
 
-  getData() async {
-    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
-    var result2 =jsonDecode(result.body);
-    print(result2[0]['likes']);
 
+getData() async {
+  var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
+
+
+  if(result.statusCode == 200){
+
+  } else {
+    result.statusCode == 400;
   }
+
+
+  var result2 = jsonDecode(result.body);
+
+ setState(() {
+   data = result2;
+ });
+
+}
 
   @override
   void initState() {
     super.initState();
-    getData();
+      getData();
   }
+
+  // https://codingapple1.github.io/app/data.json'
+
 
 
 
@@ -56,7 +73,7 @@ var tab = 0;
       ),
 
 
-    body: [Home(), Text('샵페이지')][tab],
+    body: [Home(data:data), Text('샵페이지')][tab],
 
 
 
@@ -85,24 +102,32 @@ var tab = 0;
 
 
 class Home extends StatelessWidget {
-  const Home ({Key? key}) : super(key: key);
+  const Home ({Key? key, this.data}) : super(key: key);
+  final data;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 3,
-      itemBuilder: (c, i) {
-        return Column(
-          children: [
-            Image.network('https://codingapple1.github.io/kona.jpg'),
-            Text('좋아요'),
-            Text('글쓴이'),
-            Text('글내용'),
-          ],
 
-        );
-      },
-    );
+   if(data.isNotEmpty){
+      return ListView.builder(
+        itemCount: 3,
+        itemBuilder: (c, i) {
+          return Column(
+            children: [
+              Image.network(data[i]['image']),
+              Text('좋아요 ${data[i]['likes'].toString()}'),
+              Text(data[i]['user']),
+              Text(data[i]['content']),
+            ],
+
+          );
+        },
+      );
+    } else {
+      return Text('Loading');
+    }
+
+
   }}
 
 
