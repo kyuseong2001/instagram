@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import './style.dart' as style;
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/rendering.dart';
@@ -10,27 +9,19 @@ import 'package:flutter/rendering.dart';
 void main(){
   runApp(MaterialApp(
     theme: style.theme,
-
-
       home : MyApp()));
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
 class _MyAppState extends State<MyApp> {
 
-
 var tab = 0;
-
-// 첫째화면을 누르면 0, 둘째화면을 누르면 1로 표시
-
+//c 첫째화면을 누르면 0, 둘째화면을 누르면 1로 표시
 var data = [];
-
-
 
 addData(a){
   setState(() {
@@ -38,24 +29,18 @@ addData(a){
   });
 }
 
-
 getData() async {
   var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
 
-
   if(result.statusCode == 200){
-
   } else {
     result.statusCode == 400;
   }
-
-
   var result2 = jsonDecode(result.body);
 
  setState(() {
    data = result2;
  });
-
 }
 
   @override
@@ -63,10 +48,7 @@ getData() async {
     super.initState();
       getData();
   }
-
   // https://codingapple1.github.io/app/data.json'
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +57,18 @@ getData() async {
         title: Text('Instagram'),
         actions: [
           IconButton( icon: Icon(Icons.add_box_outlined),
-            onPressed: (){},)
-        ],
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Upload()));
+
+
+              // Navigator.push(context,
+              // MaterialPageRoute(builder: (context) =>Upload()));
+            },)   // },)
+        ]
       ),
 
-
     body: [Home(data:data,addData:addData), Text('샵페이지')][tab],
-
-
 
     bottomNavigationBar: BottomNavigationBar(
       selectedItemColor: Colors.black,
@@ -99,14 +85,9 @@ getData() async {
         BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined),label: 'Shopping'),
       ],
     ),
-
-
-
     );
-
   }
 }
-
 
 class Home extends StatefulWidget {
   const Home ({Key? key, this.data,this.addData}) : super(key: key);
@@ -119,15 +100,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-
-
-  //c 스크롤바 높이를 측정하려면 스테이트를 먼저 만든다.
-
   var scroll = ScrollController();
-
+  //c 스크롤바 높이를 측정하려면 스테이트를 먼저 만든다.
   //c 스크롤 정보자료를 저장할 수 있는 저장함을 만들어주는 클래스
-  //c 현재의 스크롤바를 계속 항상 체크를 해줘야하기때문에 initState를
-  //c 설치해주고 리스너를 설치해줘야 한다. 항상 감시를 해줘야한다.
 
 getMore()async{
   var result = await http.get(Uri.parse('https://codingapple1.github.io/app/more1.json'));
@@ -140,18 +115,16 @@ getMore()async{
     super.initState();
     scroll.addListener(() {
       //c scroll이라는 변수가 변할때마다 감시해주는 함수
+      //c 현재의 스크롤바를 계속 항상 체크를 해줘야하기때문에 initState를
+      //c 설치해주고 리스너를 설치해줘야 한다. 항상 감시를 해줘야한다.
 
       if (scroll.position.pixels == scroll.position.maxScrollExtent){
 
       getMore();
 
-
       };
-
       //c print(scroll.position.userScrollDirection); 유저가 스크롤 하는 방향을 검사할 수 있다.
-
       //c print (scroll.position.maxScrollExtent);  스크롤바를 최대로 내릴수 있는 높이를 알려주는 함수
-
       //c 스크롤바를 내린 높이를 계속 측정해 주는 함수이다.
       //c
     });
@@ -186,3 +159,26 @@ getMore()async{
   }}
 
 
+class Upload extends StatelessWidget {
+  const Upload({Key? key}) : super(key: key);
+  @override
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('이미지업로드화면'),
+            IconButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.close)
+            ),
+          ],
+        )
+    );
+
+  }
+}
