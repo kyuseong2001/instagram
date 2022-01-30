@@ -14,11 +14,14 @@ var theme = ThemeData(
   appBarTheme: AppBarTheme(
     color: Colors.white,
     titleTextStyle: TextStyle(color:Colors.black,
-    fontSize: 20),
+    fontSize: 20,),
     actionsIconTheme: IconThemeData(
     color: Colors.black)
     ),
-
+  //
+  // textTheme: TextTheme(
+  // bodyText2: Text
+  // ),
 
   //c 모든 텍스트 스타일 지정하는방법 아래
   textButtonTheme: TextButtonThemeData(
@@ -26,8 +29,15 @@ var theme = ThemeData(
       backgroundColor: Colors.white54,
       textStyle: TextStyle(
         color:Colors.black,
-      )
-    )
+
+
+
+
+
+
+
+      ),
+    ),
 
   )
 

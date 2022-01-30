@@ -1,96 +1,112 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+
+// import 'package:google_fonts/google_fonts.dart';
 import './style.dart' as style;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:instagram/Upload.dart';
 
-void main(){
-  runApp(MaterialApp(
-    theme: style.theme,
-      home : MyApp()));
+void main() {
+  runApp(MaterialApp(theme: style.theme, home: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
 class _MyAppState extends State<MyApp> {
+  var tab = 0;
 
-var tab = 0;
 //c 첫째화면을 누르면 0, 둘째화면을 누르면 1로 표시
-var data = [];
+  var data = [];
 
-addData(a){
-  setState(() {
-    data.add(a);
-  });
-}
+  var userImage;
 
-getData() async {
-  var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
-
-  if(result.statusCode == 200){
-  } else {
-    result.statusCode == 400;
+  addData(a) {
+    setState(() {
+      data.add(a);
+    });
   }
-  var result2 = jsonDecode(result.body);
 
- setState(() {
-   data = result2;
- });
-}
+  getData() async {
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
+
+    if (result.statusCode == 200) {
+    } else {
+      result.statusCode == 400;
+    }
+    var result2 = jsonDecode(result.body);
+
+    setState(() {
+      data = result2;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-      getData();
+    getData();
   }
+
   // https://codingapple1.github.io/app/data.json'
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Instagram'),
+        title: Text('Instagram Google'),
         actions: [
-          IconButton( icon: Icon(Icons.add_box_outlined),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Upload()));
+          IconButton(
+            onPressed: () async {
+              var picker = ImagePicker();
+              var image = await picker.pickImage(source: ImageSource.gallery);
 
+              if (image != null) {
+                setState(() {
+                  userImage = File(image.path);
+                });
+              }
 
-              // Navigator.push(context,
-              // MaterialPageRoute(builder: (context) =>Upload()));
-            },)   // },)
-        ]
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (c) => Upload(userImage: userImage)));
+            },
+            icon: Icon(Icons.add_box_outlined),
+          )
+        ],
       ),
 
-    body: [Home(data:data,addData:addData), Text('샵페이지')][tab],
+      //c Navigator.push() 이거 쓰면 다른 위젯으로 덮어줍니다.
+      //c 덮어주지만 아무튼 페이지 이동임
 
-    bottomNavigationBar: BottomNavigationBar(
-      selectedItemColor: Colors.black,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+      body: [Home(data: data, addData: addData), Text('샵페이지')][tab],
 
-      onTap: (i){
-        setState(() {
-          tab = i;
-        });
-      },
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined),label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined),label: 'Shopping'),
-      ],
-    ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        onTap: (i) {
+          setState(() {
+            tab = i;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined), label: 'Shopping'),
+        ],
+      ),
     );
   }
 }
 
 class Home extends StatefulWidget {
-  const Home ({Key? key, this.data,this.addData}) : super(key: key);
+  const Home({Key? key, this.data, this.addData}) : super(key: key);
   final data;
   final addData;
 
@@ -99,17 +115,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   var scroll = ScrollController();
+
   //c 스크롤바 높이를 측정하려면 스테이트를 먼저 만든다.
   //c 스크롤 정보자료를 저장할 수 있는 저장함을 만들어주는 클래스
 
-getMore()async{
-  var result = await http.get(Uri.parse('https://codingapple1.github.io/app/more1.json'));
-  var result2 = jsonDecode(result.body);
-   widget.addData(result2);
+  getMore() async {
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/more1.json'));
+    var result2 = jsonDecode(result.body);
+    widget.addData(result2);
+  }
 
-}
   @override
   void initState() {
     super.initState();
@@ -118,11 +134,10 @@ getMore()async{
       //c 현재의 스크롤바를 계속 항상 체크를 해줘야하기때문에 initState를
       //c 설치해주고 리스너를 설치해줘야 한다. 항상 감시를 해줘야한다.
 
-      if (scroll.position.pixels == scroll.position.maxScrollExtent){
-
-      getMore();
-
-      };
+      if (scroll.position.pixels == scroll.position.maxScrollExtent) {
+        getMore();
+      }
+      ;
       //c print(scroll.position.userScrollDirection); 유저가 스크롤 하는 방향을 검사할 수 있다.
       //c print (scroll.position.maxScrollExtent);  스크롤바를 최대로 내릴수 있는 높이를 알려주는 함수
       //c 스크롤바를 내린 높이를 계속 측정해 주는 함수이다.
@@ -130,11 +145,9 @@ getMore()async{
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-   if(widget.data.isNotEmpty){
+    if (widget.data.isNotEmpty) {
       return ListView.builder(
         itemCount: widget.data.length,
         controller: scroll,
@@ -147,38 +160,11 @@ getMore()async{
               Text(widget.data[i]['user']),
               Text(widget.data[i]['content']),
             ],
-
           );
         },
       );
     } else {
       return Text('Loading');
     }
-
-
-  }}
-
-
-class Upload extends StatelessWidget {
-  const Upload({Key? key}) : super(key: key);
-  @override
-
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('이미지업로드화면'),
-            IconButton(
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.close)
-            ),
-          ],
-        )
-    );
-
   }
 }
